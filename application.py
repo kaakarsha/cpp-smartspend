@@ -11,7 +11,10 @@ import requests
 # Load environment variables
 load_dotenv()
 
-app = Flask(__name__)
+application = Flask(__name__)
+
+app = application
+
 app.secret_key = os.environ.get('SECRET_KEY', 'your_secret_key_here')
 
 # PostgreSQL RDS Configuration
@@ -1294,7 +1297,5 @@ def cleanup():
 atexit.register(cleanup)
 
 if __name__ == '__main__':
-    try:
-        app.run(debug=True, host="spendsmart.us-east-1.elasticbeanstalk.com", port=5000)
-    finally:
-        cleanup()
+    app.run(debug=True, host="0.0.0.0", port=5000)
+    cleanup()
