@@ -1,0 +1,433 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Profile — SpendSmart{% endblock %}
+
+{% block extra_head %}
+<style>
+    :root {
+        --emerald: #00C896;
+        --sky: #38BDF8;
+        --amber: #FBBF24;
+        --rose: #FB7185;
+        --ink: #0F172A;
+    }
+
+    .edit-hero {
+        width: 100%;
+        background: linear-gradient(135deg, #0F2027, #203A43, #2C5364);
+        padding: 3rem 3.5rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .edit-hero::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: url('https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=1600&q=80') center/cover no-repeat;
+        opacity: 0.07;
+    }
+
+    .edit-hero-inner {
+        position: relative;
+        z-index: 2;
+    }
+
+    .breadcrumb-track {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.8rem;
+        color: rgba(255,255,255,0.4);
+        margin-bottom: 0.75rem;
+    }
+
+    .breadcrumb-track a {
+        color: rgba(255,255,255,0.4);
+        text-decoration: none;
+        transition: color 0.2s;
+    }
+
+    .breadcrumb-track a:hover { color: var(--emerald); }
+    .breadcrumb-track .active { color: rgba(255,255,255,0.75); }
+
+    .edit-title {
+        font-family: 'Syne', sans-serif;
+        font-size: 1.9rem;
+        font-weight: 800;
+        color: #fff;
+        margin-bottom: 0.35rem;
+    }
+
+    .edit-sub {
+        color: rgba(255,255,255,0.45);
+        font-size: 0.88rem;
+    }
+
+    /* FORM BODY */
+    .edit-body {
+        background: #F0F4F8;
+        padding: 2.5rem 3.5rem 3.5rem;
+    }
+
+    .edit-grid {
+        display: grid;
+        grid-template-columns: 1fr 380px;
+        gap: 1.5rem;
+        align-items: start;
+    }
+
+    .card-modern {
+        background: #fff;
+        border-radius: 16px;
+        padding: 1.75rem;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        border: 1px solid rgba(0,0,0,0.05);
+        margin-bottom: 1.25rem;
+    }
+
+    .card-title-modern {
+        font-family: 'Syne', sans-serif;
+        font-size: 0.8rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+        color: #94A3B8;
+        margin-bottom: 1.25rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .form-label {
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: #475569;
+        margin-bottom: 0.4rem;
+        letter-spacing: 0.02em;
+    }
+
+    .form-control, .form-select {
+        background: #F8FAFC;
+        border: 1.5px solid #E2E8F0;
+        border-radius: 10px;
+        padding: 0.65rem 1rem;
+        font-size: 0.875rem;
+        color: var(--ink);
+        transition: all 0.2s;
+        width: 100%;
+    }
+
+    .form-control:focus, .form-select:focus {
+        border-color: var(--emerald);
+        box-shadow: 0 0 0 3px rgba(0,200,150,0.15);
+        background: #fff;
+        outline: none;
+    }
+
+    .form-control:disabled {
+        background: #F1F5F9;
+        color: #94A3B8;
+        cursor: not-allowed;
+    }
+
+    .form-hint {
+        font-size: 0.75rem;
+        color: #94A3B8;
+        margin-top: 0.3rem;
+    }
+
+    .currency-input-wrapper {
+        position: relative;
+    }
+
+    .currency-symbol {
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--emerald);
+        font-weight: 700;
+        font-size: 0.9rem;
+        pointer-events: none;
+    }
+
+    .currency-input-wrapper .form-control {
+        padding-left: 2rem;
+    }
+
+    /* SIDE CARD */
+    .tip-card {
+        background: linear-gradient(135deg, #0F172A, #1E3A5F);
+        border-radius: 16px;
+        padding: 1.75rem;
+        color: #fff;
+        position: sticky;
+        top: 88px;
+        border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .tip-card-title {
+        font-family: 'Syne', sans-serif;
+        font-weight: 700;
+        font-size: 0.95rem;
+        color: var(--emerald);
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .tip-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.85rem;
+    }
+
+    .tip-item {
+        display: flex;
+        gap: 0.75rem;
+        font-size: 0.82rem;
+        color: rgba(255,255,255,0.6);
+        line-height: 1.5;
+    }
+
+    .tip-num {
+        flex-shrink: 0;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: rgba(0,200,150,0.2);
+        border: 1px solid rgba(0,200,150,0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.68rem;
+        font-weight: 700;
+        color: var(--emerald);
+        margin-top: 1px;
+    }
+
+    .form-actions {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding-top: 0.5rem;
+        flex-wrap: wrap;
+    }
+
+    .btn-save {
+        background: var(--emerald);
+        color: var(--ink);
+        border: none;
+        border-radius: 10px;
+        padding: 0.7rem 2rem;
+        font-family: 'Syne', sans-serif;
+        font-weight: 700;
+        font-size: 0.92rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .btn-save:hover {
+        background: #00E6AD;
+        transform: translateY(-1px);
+        box-shadow: 0 8px 20px rgba(0,200,150,0.25);
+    }
+
+    .btn-cancel {
+        background: transparent;
+        color: #64748B;
+        border: 1.5px solid #E2E8F0;
+        border-radius: 10px;
+        padding: 0.7rem 1.5rem;
+        font-family: 'Syne', sans-serif;
+        font-weight: 600;
+        font-size: 0.88rem;
+        text-decoration: none;
+        transition: all 0.2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+    }
+
+    .btn-cancel:hover {
+        background: #F1F5F9;
+        color: var(--ink);
+        border-color: #CBD5E1;
+    }
+
+    @media (max-width: 1024px) {
+        .edit-grid { grid-template-columns: 1fr; }
+        .tip-card { position: static; }
+    }
+
+    @media (max-width: 768px) {
+        .edit-hero { padding: 2rem 1.25rem; }
+        .edit-body { padding: 1.5rem 1.25rem; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="edit-hero">
+    <div class="edit-hero-inner">
+        <div class="breadcrumb-track">
+            <a href="{{ url_for('index') }}">Dashboard</a>
+            <i class="fas fa-chevron-right" style="font-size:0.65rem"></i>
+            <a href="{{ url_for('profile') }}">Profile</a>
+            <i class="fas fa-chevron-right" style="font-size:0.65rem"></i>
+            <span class="active">Edit Profile</span>
+        </div>
+        <div class="edit-title">Edit Profile</div>
+        <div class="edit-sub">Update your personal info and financial goals</div>
+    </div>
+</div>
+
+<div class="edit-body">
+    <form method="post" onsubmit="return validateForm()">
+        <div class="edit-grid">
+
+            <!-- LEFT: FORM CARDS -->
+            <div>
+
+                <!-- Personal Info -->
+                <div class="card-modern">
+                    <div class="card-title-modern"><i class="fas fa-user"></i> Personal Information</div>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="full_name" class="form-label">Full Name</label>
+                            <input type="text" class="form-control" id="full_name" name="full_name"
+                                   value="{{ user['full_name'] or '' }}" placeholder="Your full name">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Username</label>
+                            <input type="text" class="form-control" value="{{ user['username'] }}" disabled>
+                            <div class="form-hint"><i class="fas fa-lock me-1"></i> Username cannot be changed</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="email" class="form-label">Email Address</label>
+                            <input type="email" class="form-control" id="email" name="email"
+                                   value="{{ user['email'] }}" required placeholder="you@email.com">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="phone" class="form-label">Phone Number</label>
+                            <input type="tel" class="form-control" id="phone" name="phone"
+                                   value="{{ user['phone'] or '' }}" placeholder="+91 XXXXX XXXXX">
+                        </div>
+                        <div class="col-12">
+                            <label for="profession" class="form-label">Profession</label>
+                            <select class="form-select" id="profession" name="profession">
+                                <option value="">Select your profession...</option>
+                                <option value="Software Engineer" {% if user['profession'] == 'Software Engineer' %}selected{% endif %}>Software Engineer</option>
+                                <option value="Doctor" {% if user['profession'] == 'Doctor' %}selected{% endif %}>Doctor</option>
+                                <option value="Teacher" {% if user['profession'] == 'Teacher' %}selected{% endif %}>Teacher</option>
+                                <option value="Business" {% if user['profession'] == 'Business' %}selected{% endif %}>Business</option>
+                                <option value="Student" {% if user['profession'] == 'Student' %}selected{% endif %}>Student</option>
+                                <option value="Other" {% if user['profession'] == 'Other' %}selected{% endif %}>Other</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Financial Goals -->
+                <div class="card-modern">
+                    <div class="card-title-modern"><i class="fas fa-chart-line"></i> Financial Settings</div>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="monthly_income" class="form-label">Monthly Income</label>
+                            <div class="currency-input-wrapper">
+                                <span class="currency-symbol">€</span>
+                                <input type="number" class="form-control" id="monthly_income" name="monthly_income"
+                                       step="0.01" value="{{ user['monthly_income'] or 0 }}" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="savings_goal" class="form-label">Savings Goal</label>
+                            <div class="currency-input-wrapper">
+                                <span class="currency-symbol">€</span>
+                                <input type="number" class="form-control" id="savings_goal" name="savings_goal"
+                                       step="0.01" value="{{ user['savings_goal'] or 0 }}" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="background:#F0FDF4; border:1px solid #A7F3D0; border-radius:10px; padding:0.85rem 1rem; margin-top:1.25rem; font-size:0.82rem; color:#059669; display:flex; align-items:flex-start; gap:0.6rem">
+                        <i class="fas fa-lightbulb" style="margin-top:1px; flex-shrink:0"></i>
+                        <span>Your savings goal tracks remaining budget after expenses. The dashboard shows live progress toward your goal.</span>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn-save">
+                        <i class="fas fa-check"></i> Save Changes
+                    </button>
+                    <a href="{{ url_for('profile') }}" class="btn-cancel">
+                        <i class="fas fa-times"></i> Cancel
+                    </a>
+                </div>
+
+            </div>
+
+            <!-- RIGHT: TIPS -->
+            <div>
+                <div class="tip-card">
+                    <div class="tip-card-title"><i class="fas fa-star"></i> Profile Tips</div>
+                    <div class="tip-list">
+                        <div class="tip-item">
+                            <div class="tip-num">1</div>
+                            <span>Keep your monthly income updated for accurate savings calculations.</span>
+                        </div>
+                        <div class="tip-item">
+                            <div class="tip-num">2</div>
+                            <span>A realistic savings goal motivates better spending habits.</span>
+                        </div>
+                        <div class="tip-item">
+                            <div class="tip-num">3</div>
+                            <span>Adding your profession helps SpendSmart tailor financial insights for you.</span>
+                        </div>
+                        <div class="tip-item">
+                            <div class="tip-num">4</div>
+                            <span>Review and update your goals each month as income changes.</span>
+                        </div>
+                    </div>
+                    <div style="border-top:1px solid rgba(255,255,255,0.08); margin-top:1.5rem; padding-top:1.25rem">
+                        <div style="font-size:0.78rem; color:rgba(255,255,255,0.3); line-height:1.6">
+                            Your data is stored securely and is only accessible by you.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </form>
+</div>
+
+<script>
+    function validateForm() {
+        const email = document.getElementById('email').value;
+        const monthlyIncome = parseFloat(document.getElementById('monthly_income').value);
+        const savingsGoal = parseFloat(document.getElementById('savings_goal').value);
+
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailPattern.test(email)) {
+            alert('Please enter a valid email address');
+            return false;
+        }
+        if (monthlyIncome < 0) {
+            alert('Monthly income cannot be negative');
+            return false;
+        }
+        if (savingsGoal < 0) {
+            alert('Savings goal cannot be negative');
+            return false;
+        }
+        return true;
+    }
+</script>
+
+{% endblock %}

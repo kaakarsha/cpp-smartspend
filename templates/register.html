@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register — SpendSmart</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --emerald: #00C896;
+            --sky: #38BDF8;
+            --amber: #FBBF24;
+            --rose: #FB7185;
+            --ink: #0F172A;
+        }
+
+        * { font-family: 'DM Sans', sans-serif; box-sizing: border-box; margin: 0; padding: 0; }
+        h1,h2,h3,.brand { font-family: 'Syne', sans-serif; }
+
+        body {
+            min-height: 100vh;
+            background: #F0F4F8;
+            display: flex;
+            align-items: stretch;
+        }
+
+        /* SIDE IMAGE */
+        .side-panel {
+            width: 380px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            overflow: hidden;
+            display: flex;
+            align-items: flex-end;
+            padding: 2.5rem;
+            z-index: 1;
+        }
+
+        .side-panel::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: url('https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=800&q=80') center/cover no-repeat;
+            opacity: 0.3;
+        }
+
+        .side-panel::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, rgba(15,23,42,0.5) 0%, rgba(15,23,42,0.95) 100%);
+        }
+
+        .side-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .brand {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--emerald);
+            margin-bottom: 0.75rem;
+        }
+
+        .brand span { color: #fff; }
+
+        .side-tagline {
+            color: rgba(255,255,255,0.5);
+            font-size: 0.875rem;
+            line-height: 1.6;
+        }
+
+        /* FORM AREA */
+        .form-area {
+            flex: 1;
+            margin-left: 380px;
+            min-height: 100vh;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 4rem 2.5rem;
+        }
+
+        .register-box {
+            width: 100%;
+            max-width: 640px;
+        }
+
+        .page-title {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.9rem;
+            font-weight: 800;
+            color: var(--ink);
+            margin-bottom: 0.4rem;
+        }
+
+        .page-sub {
+            color: #64748B;
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+        }
+
+        .form-section {
+            background: #fff;
+            border-radius: 16px;
+            padding: 1.75rem;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+            border: 1px solid rgba(0,0,0,0.05);
+            margin-bottom: 1.25rem;
+        }
+
+        .form-section-title {
+            font-family: 'Syne', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            color: #94A3B8;
+            margin-bottom: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .form-section-title i {
+            font-size: 0.8rem;
+        }
+
+        .form-label {
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: #475569;
+            margin-bottom: 0.4rem;
+            letter-spacing: 0.02em;
+        }
+
+        .form-control, .form-select {
+            background: #F8FAFC;
+            border: 1.5px solid #E2E8F0;
+            border-radius: 10px;
+            padding: 0.65rem 1rem;
+            font-size: 0.9rem;
+            color: var(--ink);
+            transition: all 0.2s;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--emerald);
+            box-shadow: 0 0 0 3px rgba(0,200,150,0.15);
+            background: #fff;
+            outline: none;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94A3B8;
+            font-size: 0.82rem;
+            pointer-events: none;
+        }
+
+        .input-wrapper .form-control {
+            padding-left: 2.5rem;
+        }
+
+        .optional-badge {
+            font-size: 0.7rem;
+            background: #F1F5F9;
+            color: #94A3B8;
+            padding: 0.1rem 0.5rem;
+            border-radius: 4px;
+            margin-left: 0.4rem;
+            font-weight: 400;
+        }
+
+        .income-prefix {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--emerald);
+            font-weight: 700;
+            font-size: 0.9rem;
+            pointer-events: none;
+        }
+
+        .income-input {
+            padding-left: 2rem !important;
+        }
+
+        .btn-register {
+            width: 100%;
+            background: var(--emerald);
+            color: var(--ink);
+            border: none;
+            border-radius: 10px;
+            padding: 0.85rem;
+            font-family: 'Syne', sans-serif;
+            font-size: 1rem;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.2s;
+            letter-spacing: 0.01em;
+        }
+
+        .btn-register:hover {
+            background: #00E6AD;
+            transform: translateY(-1px);
+            box-shadow: 0 8px 20px rgba(0,200,150,0.3);
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 1.25rem;
+            font-size: 0.875rem;
+            color: #64748B;
+        }
+
+        .login-link a {
+            color: var(--emerald);
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .alert {
+            border-radius: 10px;
+            font-size: 0.85rem;
+            padding: 0.7rem 1rem;
+            border: none;
+            margin-bottom: 1rem;
+        }
+
+        .alert-danger { background: #FFF1F2; color: #E11D48; }
+        .alert-success { background: #F0FDF4; color: #16A34A; }
+
+        .password-strength {
+            margin-top: 0.4rem;
+        }
+
+        .strength-bar {
+            height: 4px;
+            background: #E2E8F0;
+            border-radius: 99px;
+            overflow: hidden;
+        }
+
+        .strength-fill {
+            height: 100%;
+            border-radius: 99px;
+            transition: all 0.3s;
+            width: 0%;
+        }
+
+        .strength-text {
+            font-size: 0.73rem;
+            color: #94A3B8;
+            margin-top: 0.2rem;
+        }
+
+        @media (max-width: 900px) {
+            .side-panel { display: none; }
+            .form-area { margin-left: 0; padding: 2rem 1.25rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="side-panel">
+        <div class="side-content">
+            <div class="brand">SpendSmart</div>
+            <div class="side-tagline">Your financial story starts here.<br>Sign up and start tracking smarter.</div>
+        </div>
+    </div>
+
+    <div class="form-area">
+        <div class="register-box">
+            <div class="page-title">Create your account</div>
+            <div class="page-sub">Join thousands of smart savers on SpendSmart</div>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+              {% if messages %}
+                {% for category, message in messages %}
+                  <div class="alert alert-{{ category }}">
+                    <i class="fas fa-info-circle me-1"></i> {{ message }}
+                  </div>
+                {% endfor %}
+              {% endif %}
+            {% endwith %}
+
+            <form action="{{ url_for('register') }}" method="post">
+
+                <!-- Account Info -->
+                <div class="form-section">
+                    <div class="form-section-title">
+                        <i class="fas fa-user-circle"></i> Account Information
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="username" class="form-label">Username</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-at input-icon"></i>
+                                <input type="text" id="username" name="username" class="form-control" placeholder="johndoe" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="email" class="form-label">Email Address</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-envelope input-icon"></i>
+                                <input type="email" id="email" name="email" class="form-control" placeholder="john@email.com" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="phone" class="form-label">Phone Number</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-phone input-icon"></i>
+                                <input type="tel" id="phone" name="phone" class="form-control" placeholder="+91 XXXXX XXXXX" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="password" class="form-label">Password</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-lock input-icon"></i>
+                                <input type="password" id="password" name="password" class="form-control" placeholder="••••••••" required oninput="checkStrength(this.value)">
+                            </div>
+                            <div class="password-strength">
+                                <div class="strength-bar"><div class="strength-fill" id="strengthFill"></div></div>
+                                <div class="strength-text" id="strengthText">Enter a password</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Personal Info -->
+                <div class="form-section">
+                    <div class="form-section-title">
+                        <i class="fas fa-id-card"></i> Personal Details <span class="optional-badge">Optional</span>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="full_name" class="form-label">Full Name <span class="optional-badge">Optional</span></label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-user input-icon"></i>
+                                <input type="text" id="full_name" name="full_name" class="form-control" placeholder="John Doe">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="profession" class="form-label">Profession <span class="optional-badge">Optional</span></label>
+                            <select id="profession" name="profession" class="form-select">
+                                <option value="">Select profession...</option>
+                                <option value="Software Engineer">Software Engineer</option>
+                                <option value="Doctor">Doctor</option>
+                                <option value="Teacher">Teacher</option>
+                                <option value="Business">Business</option>
+                                <option value="Student">Student</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Financial Info -->
+                <div class="form-section">
+                    <div class="form-section-title">
+                        <i class="fas fa-chart-line"></i> Financial Goals
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="monthly_income" class="form-label">Monthly Income (€)</label>
+                            <div class="input-wrapper">
+                                <span class="income-prefix">€</span>
+                                <input type="number" id="monthly_income" name="monthly_income" class="form-control income-input" placeholder="0.00" step="0.01" value="0">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="savings_goal" class="form-label">Savings Goal (€)</label>
+                            <div class="input-wrapper">
+                                <span class="income-prefix">€</span>
+                                <input type="number" id="savings_goal" name="savings_goal" class="form-control income-input" placeholder="0.00" step="0.01" value="0">
+                            </div>
+                        </div>
+                    </div>
+                    <div style="background:#F0FDF4; border-radius:8px; padding:0.75rem 1rem; margin-top:1rem; font-size:0.82rem; color:#16A34A; display:flex; align-items:center; gap:0.5rem">
+                        <i class="fas fa-lightbulb"></i>
+                        Setting a savings goal helps SpendSmart track your financial progress automatically.
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-register">
+                    <i class="fas fa-rocket me-2"></i> Create Account
+                </button>
+            </form>
+
+            <div class="login-link">
+                Already have an account? <a href="{{ url_for('login') }}">Sign in</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function checkStrength(val) {
+            const fill = document.getElementById('strengthFill');
+            const text = document.getElementById('strengthText');
+            let score = 0;
+            if (val.length >= 8) score++;
+            if (/[A-Z]/.test(val)) score++;
+            if (/[0-9]/.test(val)) score++;
+            if (/[^A-Za-z0-9]/.test(val)) score++;
+
+            const configs = [
+                { w: '0%', c: '#E2E8F0', t: 'Enter a password' },
+                { w: '25%', c: '#FB7185', t: 'Weak' },
+                { w: '50%', c: '#FBBF24', t: 'Fair' },
+                { w: '75%', c: '#38BDF8', t: 'Good' },
+                { w: '100%', c: '#00C896', t: 'Strong' },
+            ];
+            fill.style.width = configs[score].w;
+            fill.style.background = configs[score].c;
+            text.textContent = configs[score].t;
+            text.style.color = configs[score].c;
+        }
+    </script>
+
+</body>
+</html>

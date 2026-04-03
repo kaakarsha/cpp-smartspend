@@ -1,0 +1,500 @@
+{% extends 'base.html' %}
+
+{% block title %}Statistics — SpendSmart{% endblock %}
+
+{% block extra_head %}
+<style>
+    :root {
+        --emerald: #00C896;
+        --sky: #38BDF8;
+        --amber: #FBBF24;
+        --rose: #FB7185;
+        --violet: #A78BFA;
+        --ink: #0F172A;
+    }
+
+    .stats-hero {
+        background: linear-gradient(135deg, #0F2027, #203A43, #2C5364);
+        padding: 3rem 3.5rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .stats-hero::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: url('https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1600&q=80') center/cover no-repeat;
+        opacity: 0.07;
+    }
+
+    .stats-hero-glow {
+        position: absolute;
+        top: -100px;
+        right: -100px;
+        width: 450px;
+        height: 450px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(56,189,248,0.15) 0%, transparent 70%);
+        pointer-events: none;
+    }
+
+    .stats-hero-inner {
+        position: relative;
+        z-index: 2;
+    }
+
+    .stats-title {
+        font-family: 'Syne', sans-serif;
+        font-size: 1.9rem;
+        font-weight: 800;
+        color: #fff;
+        margin-bottom: 0.3rem;
+    }
+
+    .stats-sub {
+        color: rgba(255,255,255,0.45);
+        font-size: 0.88rem;
+    }
+
+    /* BODY */
+    .stats-body {
+        background: #F0F4F8;
+        padding: 2.5rem 3.5rem 4rem;
+    }
+
+    .section-label {
+        font-family: 'Syne', sans-serif;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: #94A3B8;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    /* TOTAL EXPENSE CARD */
+    .total-card {
+        background: linear-gradient(135deg, var(--ink), #1E3A5F);
+        border-radius: 20px;
+        padding: 2.5rem 3rem;
+        position: relative;
+        overflow: hidden;
+        margin-bottom: 2rem;
+        border: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .total-card::before {
+        content: '';
+        position: absolute;
+        top: -60px;
+        right: -60px;
+        width: 280px;
+        height: 280px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(0,200,150,0.15) 0%, transparent 70%);
+    }
+
+    .total-card::after {
+        content: '';
+        position: absolute;
+        bottom: -40px;
+        left: -40px;
+        width: 200px;
+        height: 200px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(56,189,248,0.1) 0%, transparent 70%);
+    }
+
+    .total-card-inner {
+        position: relative;
+        z-index: 2;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+    }
+
+    .total-label {
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: rgba(255,255,255,0.4);
+        margin-bottom: 0.5rem;
+    }
+
+    .total-value {
+        font-family: 'Syne', sans-serif;
+        font-size: clamp(2.5rem, 5vw, 3.5rem);
+        font-weight: 800;
+        color: var(--emerald);
+        line-height: 1;
+        letter-spacing: -1px;
+    }
+
+    .total-sub {
+        color: rgba(255,255,255,0.35);
+        font-size: 0.82rem;
+        margin-top: 0.4rem;
+    }
+
+    .total-badge {
+        background: rgba(0,200,150,0.15);
+        border: 1px solid rgba(0,200,150,0.3);
+        border-radius: 12px;
+        padding: 0.75rem 1.25rem;
+        text-align: center;
+        min-width: 120px;
+    }
+
+    .total-badge-label {
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: rgba(255,255,255,0.4);
+        margin-bottom: 0.25rem;
+    }
+
+    .total-badge-val {
+        font-family: 'Syne', sans-serif;
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--emerald);
+    }
+
+    /* 2-COLUMN GRID */
+    .stats-grid-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    @media (max-width: 900px) {
+        .stats-grid-2 { grid-template-columns: 1fr; }
+    }
+
+    .stat-card {
+        background: #fff;
+        border-radius: 16px;
+        padding: 1.75rem;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        border: 1px solid rgba(0,0,0,0.05);
+    }
+
+    .stat-card-title {
+        font-family: 'Syne', sans-serif;
+        font-size: 0.9rem;
+        font-weight: 700;
+        color: var(--ink);
+        margin-bottom: 1.25rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    /* CATEGORY TABLE */
+    .cat-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .cat-table thead th {
+        font-size: 0.72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: #94A3B8;
+        padding: 0.6rem 0.75rem;
+        background: #F8FAFC;
+        border-radius: 8px;
+    }
+
+    .cat-table tbody tr {
+        border-bottom: 1px solid #F1F5F9;
+        transition: background 0.15s;
+    }
+
+    .cat-table tbody tr:last-child { border-bottom: none; }
+    .cat-table tbody tr:hover { background: #F8FAFC; }
+
+    .cat-table td {
+        padding: 0.85rem 0.75rem;
+        font-size: 0.875rem;
+        color: var(--ink);
+        vertical-align: middle;
+    }
+
+    .cat-color-dot {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        margin-right: 0.5rem;
+    }
+
+    .cat-amount {
+        font-family: 'Syne', sans-serif;
+        font-weight: 700;
+        color: #EF4444;
+        font-size: 0.875rem;
+    }
+
+    /* BAR CHART ROW */
+    .bar-row {
+        display: flex;
+        flex-direction: column;
+        gap: 0.85rem;
+    }
+
+    .bar-item {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .bar-label {
+        font-size: 0.8rem;
+        color: #475569;
+        font-weight: 500;
+        min-width: 100px;
+        max-width: 120px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .bar-track {
+        flex: 1;
+        height: 10px;
+        background: #F1F5F9;
+        border-radius: 99px;
+        overflow: hidden;
+    }
+
+    .bar-fill {
+        height: 100%;
+        border-radius: 99px;
+        background: linear-gradient(90deg, var(--emerald), var(--sky));
+        transition: width 1s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    .bar-val {
+        font-size: 0.78rem;
+        font-weight: 700;
+        color: #475569;
+        min-width: 70px;
+        text-align: right;
+        font-family: 'Syne', sans-serif;
+    }
+
+    /* TOP SPENDING */
+    .rank-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .rank-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 0.85rem 1rem;
+        border-radius: 10px;
+        background: #F8FAFC;
+        border: 1px solid #F1F5F9;
+        transition: all 0.15s;
+    }
+
+    .rank-item:hover { background: #F1F5F9; transform: translateX(3px); }
+
+    .rank-num {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: 'Syne', sans-serif;
+        font-size: 0.75rem;
+        font-weight: 800;
+        flex-shrink: 0;
+    }
+
+    .rank-num.r1 { background: #FFFBEB; color: #D97706; }
+    .rank-num.r2 { background: #F1F5F9; color: #64748B; }
+    .rank-num.r3 { background: #FFF7ED; color: #C2410C; }
+    .rank-num.rn { background: #F8FAFC; color: #94A3B8; }
+
+    .rank-name {
+        flex: 1;
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: var(--ink);
+    }
+
+    .rank-amount {
+        font-family: 'Syne', sans-serif;
+        font-size: 0.9rem;
+        font-weight: 700;
+        color: #EF4444;
+    }
+
+    @media (max-width: 768px) {
+        .stats-hero { padding: 2rem 1.25rem; }
+        .stats-body { padding: 1.5rem 1.25rem; }
+        .total-card { padding: 1.75rem; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="stats-hero">
+    <div class="stats-hero-glow"></div>
+    <div class="stats-hero-inner">
+        <div class="stats-title">Statistics</div>
+        <div class="stats-sub">In-depth analysis of your spending patterns</div>
+    </div>
+</div>
+
+<div class="stats-body">
+
+    <!-- TOTAL EXPENSE CARD -->
+    <div class="total-card">
+        <div class="total-card-inner">
+            <div>
+                <div class="total-label">Total Expenses</div>
+                <div class="total-value">€{{ total_expenses }}</div>
+                <div class="total-sub">Across all categories and payment methods</div>
+            </div>
+            <div style="display:flex; gap:0.75rem; flex-wrap:wrap">
+                {% set category_count = expense_by_category|length %}
+                <div class="total-badge">
+                    <div class="total-badge-label">Categories</div>
+                    <div class="total-badge-val">{{ category_count }}</div>
+                </div>
+                <div class="total-badge">
+                    <div class="total-badge-label">Top Spend</div>
+                    {% set max_cat = top_spending_categories.keys()|list|first if top_spending_categories else '—' %}
+                    <div class="total-badge-val">{{ max_cat }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- BREAKDOWN + BAR CHARTS -->
+    <div class="stats-grid-2">
+
+        <!-- CATEGORY BREAKDOWN TABLE -->
+        <div class="stat-card">
+            <div class="stat-card-title">
+                <i class="fas fa-th" style="color:var(--sky)"></i> Expense by Category
+            </div>
+
+            {% set colors = ['#FB7185','#38BDF8','#FBBF24','#00C896','#A78BFA','#F97316','#34D399','#60A5FA'] %}
+            {% set max_val = expense_by_category.values()|max if expense_by_category else 1 %}
+
+            <div class="bar-row">
+                {% for category, amount in expense_by_category.items() %}
+                {% set loop_idx = loop.index0 %}
+                <div class="bar-item">
+                    <div class="bar-label" title="{{ category }}">{{ category }}</div>
+                    <div class="bar-track">
+                        <div class="bar-fill" style="width: {{ ((amount / max_val) * 100)|round }}%; background: {{ colors[loop_idx % colors|length] }};"></div>
+                    </div>
+                    <div class="bar-val">€{{ amount }}</div>
+                </div>
+                {% else %}
+                <p style="color:#94A3B8; font-size:0.875rem">No data available</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- TOP CATEGORIES TABLE -->
+        <div class="stat-card">
+            <div class="stat-card-title">
+                <i class="fas fa-trophy" style="color:var(--amber)"></i> Top Spending Categories
+            </div>
+            <div class="rank-list">
+                {% for category, amount in top_spending_categories.items() %}
+                <div class="rank-item">
+                    <div class="rank-num {% if loop.index == 1 %}r1{% elif loop.index == 2 %}r2{% elif loop.index == 3 %}r3{% else %}rn{% endif %}">
+                        {{ loop.index }}
+                    </div>
+                    <div class="rank-name">{{ category }}</div>
+                    <div class="rank-amount">€{{ amount }}</div>
+                </div>
+                {% else %}
+                <p style="color:#94A3B8; font-size:0.875rem; padding:1rem 0">No data available</p>
+                {% endfor %}
+            </div>
+        </div>
+
+    </div>
+
+    <!-- FULL CATEGORY TABLE -->
+    <div class="stat-card">
+        <div class="stat-card-title">
+            <i class="fas fa-table" style="color:var(--violet)"></i> Complete Category Breakdown
+        </div>
+        <div style="overflow-x:auto">
+            <table class="cat-table">
+                <thead>
+                    <tr>
+                        <th style="text-align:left">Category</th>
+                        <th style="text-align:right">Amount (€)</th>
+                        <th style="text-align:right">Share</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% set total = namespace(val=0) %}
+                    {% for cat, amt in expense_by_category.items() %}
+                        {% set total.val = total.val + amt %}
+                    {% endfor %}
+
+                    {% set cat_colors = ['#FB7185','#38BDF8','#FBBF24','#00C896','#A78BFA','#F97316','#34D399','#60A5FA','#F472B6','#A3E635'] %}
+                    {% for category, amount in expense_by_category.items() %}
+                    <tr>
+                        <td>
+                            <span class="cat-color-dot" style="background: {{ cat_colors[loop.index0 % cat_colors|length] }}"></span>
+                            {{ category }}
+                        </td>
+                        <td style="text-align:right"><span class="cat-amount">€{{ amount }}</span></td>
+                        <td style="text-align:right">
+                            {% if total.val > 0 %}
+                            <span style="font-size:0.78rem; color:#94A3B8; font-weight:500">
+                                {{ "%.1f"|format((amount / total.val) * 100) }}%
+                            </span>
+                            {% else %}—{% endif %}
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="3" style="text-align:center; padding:2rem; color:#94A3B8; font-size:0.875rem">
+                            No expense data found
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                {% if expense_by_category %}
+                <tfoot>
+                    <tr style="border-top:2px solid #E2E8F0">
+                        <td style="font-family:'Syne',sans-serif; font-weight:700; color:var(--ink); padding:0.85rem 0.75rem">Total</td>
+                        <td style="text-align:right; font-family:'Syne',sans-serif; font-weight:800; color:#EF4444; padding:0.85rem 0.75rem">€{{ total_expenses }}</td>
+                        <td style="text-align:right; font-size:0.78rem; color:#94A3B8; padding:0.85rem 0.75rem">100%</td>
+                    </tr>
+                </tfoot>
+                {% endif %}
+            </table>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

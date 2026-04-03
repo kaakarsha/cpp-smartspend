@@ -1,0 +1,858 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard — SpendWise{% endblock %}
+
+{% block extra_head %}
+<style>
+    :root {
+        --emerald: #00C896;
+        --sky: #38BDF8;
+        --amber: #FBBF24;
+        --rose: #FB7185;
+        --ink: #0F172A;
+        --ink-soft: #1E293B;
+    }
+
+    .dashboard-hero {
+        width: 100%;
+        min-height: 280px;
+        position: relative;
+        background: linear-gradient(135deg, #0F2027, #203A43, #2C5364);
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        padding: 3rem 3.5rem;
+    }
+
+    .dashboard-hero::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background:
+            url('https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=1600&q=80') center/cover no-repeat;
+        opacity: 0.12;
+    }
+
+    .hero-glow {
+        position: absolute;
+        top: -60px;
+        right: -60px;
+        width: 400px;
+        height: 400px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(0,200,150,0.25) 0%, transparent 70%);
+        pointer-events: none;
+    }
+
+    .hero-content {
+        position: relative;
+        z-index: 2;
+        flex: 1;
+    }
+
+    .hero-greeting {
+        font-family: 'Syne', sans-serif;
+        font-size: clamp(1.6rem, 3vw, 2.5rem);
+        font-weight: 800;
+        color: #fff;
+        line-height: 1.15;
+        margin-bottom: 0.5rem;
+    }
+
+    .hero-greeting .highlight {
+        font-family: 'Syne', sans-serif;
+        color: var(--emerald);
+    }
+
+    .hero-sub {
+        color: rgba(255,255,255,0.55);
+        font-size: 0.95rem;
+        font-weight: 400;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .hero-badge {
+        background: rgba(255,255,255,0.1);
+        border: 1px solid rgba(255,255,255,0.15);
+        border-radius: 20px;
+        padding: 0.2rem 0.75rem;
+        font-size: 0.78rem;
+        color: rgba(255,255,255,0.7);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+    }
+
+    .hero-cta {
+        background: var(--emerald);
+        color: #0F172A;
+        border: none;
+        border-radius: 10px;
+        padding: 0.6rem 1.4rem;
+        font-family: 'Syne', sans-serif;
+        font-weight: 700;
+        font-size: 0.85rem;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-top: 1.25rem;
+        transition: all 0.2s;
+    }
+
+    .hero-cta:hover {
+        background: #00E6AD;
+        color: #0F172A;
+        transform: translateY(-1px);
+    }
+
+    /* ── MAIN DASHBOARD AREA ── */
+    .dashboard-main {
+        background: #F0F4F8;
+        padding: 2.5rem 3.5rem;
+        min-height: calc(100vh - 280px - 68px);
+    }
+
+    /* ── KPI CARDS ── */
+    .kpi-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 1.25rem;
+        margin-bottom: 2rem;
+    }
+
+    .kpi-card {
+        background: #fff;
+        border-radius: 16px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        border: 1px solid rgba(0,0,0,0.05);
+        position: relative;
+        overflow: hidden;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .kpi-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+    }
+
+    .kpi-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        border-radius: 16px 16px 0 0;
+    }
+
+    .kpi-card.expenses::before { background: var(--rose); }
+    .kpi-card.upi::before { background: var(--sky); }
+    .kpi-card.cash::before { background: var(--amber); }
+    .kpi-card.savings::before { background: var(--emerald); }
+
+    .kpi-label {
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: #94A3B8;
+        margin-bottom: 0.5rem;
+    }
+
+    .kpi-value {
+        font-family: 'Syne', sans-serif;
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: var(--ink);
+        line-height: 1;
+        margin-bottom: 0.5rem;
+    }
+
+    .kpi-icon {
+        position: absolute;
+        right: 1.25rem;
+        top: 1.25rem;
+        width: 42px;
+        height: 42px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+    }
+
+    .kpi-card.expenses .kpi-icon { background: #FFF1F2; color: var(--rose); }
+    .kpi-card.upi .kpi-icon { background: #F0F9FF; color: var(--sky); }
+    .kpi-card.cash .kpi-icon { background: #FFFBEB; color: var(--amber); }
+    .kpi-card.savings .kpi-icon { background: #ECFDF5; color: var(--emerald); }
+
+    .kpi-sub {
+        font-size: 0.78rem;
+        color: #94A3B8;
+    }
+
+    /* ── GOALS SECTION ── */
+    .goals-card {
+        background: #fff;
+        border-radius: 16px;
+        padding: 1.75rem 2rem;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        border: 1px solid rgba(0,0,0,0.05);
+        margin-bottom: 2rem;
+    }
+
+    .section-title {
+        font-family: 'Syne', sans-serif;
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: var(--ink);
+        margin-bottom: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .goals-meta {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+        margin: 1.25rem 0;
+    }
+
+    .goals-meta-item {
+        text-align: center;
+        padding: 0.75rem;
+        border-radius: 10px;
+        background: #F8FAFC;
+    }
+
+    .goals-meta-item label {
+        display: block;
+        font-size: 0.73rem;
+        color: #94A3B8;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 0.25rem;
+    }
+
+    .goals-meta-item span {
+        font-family: 'Syne', sans-serif;
+        font-size: 1.1rem;
+        font-weight: 700;
+    }
+
+    .goals-progress-bar {
+        height: 12px;
+        background: #E2E8F0;
+        border-radius: 99px;
+        overflow: hidden;
+        margin-bottom: 0.5rem;
+    }
+
+    .goals-progress-fill {
+        height: 100%;
+        border-radius: 99px;
+        background: linear-gradient(90deg, var(--emerald), var(--sky));
+        transition: width 1s cubic-bezier(0.4,0,0.2,1);
+        position: relative;
+    }
+
+    .goals-progress-fill::after {
+        content: '';
+        position: absolute;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        width: 6px;
+        border-radius: 0 99px 99px 0;
+        background: rgba(255,255,255,0.6);
+        animation: shimmer 2s infinite;
+    }
+
+    @keyframes shimmer {
+        0%, 100% { opacity: 0.6; }
+        50% { opacity: 1; }
+    }
+
+    .goal-status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.3rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.78rem;
+        font-weight: 600;
+    }
+
+    /* ── CHART TOGGLE ── */
+    .chart-tabs {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+    }
+    
+    .chart-tab {
+        background: #F1F5F9;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 10px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #64748B;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-family: 'Syne', sans-serif;
+    }
+    
+    .chart-tab.active {
+        background: var(--emerald);
+        color: #0F172A;
+    }
+    
+    .chart-tab:hover:not(.active) {
+        background: #E2E8F0;
+        transform: translateY(-1px);
+    }
+    
+    .chart-container {
+        display: none;
+    }
+    
+    .chart-container.active {
+        display: block;
+    }
+
+    /* ── CHARTS GRID ── */
+    .charts-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    @media (max-width: 900px) {
+        .charts-grid { grid-template-columns: 1fr; }
+    }
+
+    .chart-card {
+        background: #fff;
+        border-radius: 16px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        border: 1px solid rgba(0,0,0,0.05);
+    }
+
+    .chart-card canvas {
+        max-height: 240px;
+        max-width: 100%;
+    }
+
+    /* ── TRANSACTIONS TABLE ── */
+    .table-card {
+        background: #fff;
+        border-radius: 16px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        border: 1px solid rgba(0,0,0,0.05);
+    }
+
+    .table-card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1.25rem;
+    }
+
+    .modern-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .modern-table thead th {
+        font-size: 0.73rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: #94A3B8;
+        padding: 0.75rem 1rem;
+        border-bottom: 1px solid #E2E8F0;
+        background: #F8FAFC;
+    }
+
+    .modern-table thead th:first-child { border-radius: 8px 0 0 8px; }
+    .modern-table thead th:last-child { border-radius: 0 8px 8px 0; }
+
+    .modern-table tbody tr {
+        border-bottom: 1px solid #F1F5F9;
+        transition: background 0.15s;
+    }
+
+    .modern-table tbody tr:hover { background: #F8FAFC; }
+    .modern-table tbody tr:last-child { border-bottom: none; }
+
+    .modern-table td {
+        padding: 0.9rem 1rem;
+        font-size: 0.875rem;
+        color: var(--ink);
+    }
+
+    .cat-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.25rem 0.7rem;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 500;
+        background: #F1F5F9;
+        color: #475569;
+    }
+
+    .amount-neg {
+        font-family: 'Syne', sans-serif;
+        font-weight: 700;
+        font-size: 0.9rem;
+        color: #EF4444;
+    }
+
+    .method-tag {
+        font-size: 0.75rem;
+        padding: 0.2rem 0.6rem;
+        border-radius: 6px;
+        font-weight: 500;
+    }
+
+    .method-upi { background: #EFF6FF; color: #3B82F6; }
+    .method-cash { background: #FFFBEB; color: #D97706; }
+    .method-card { background: #F0FDF4; color: #16A34A; }
+    .method-bank { background: #FDF4FF; color: #9333EA; }
+
+    .btn-view-all {
+        background: var(--ink);
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        padding: 0.45rem 1rem;
+        font-size: 0.82rem;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.2s;
+        font-family: 'Syne', sans-serif;
+    }
+
+    .btn-view-all:hover {
+        background: var(--emerald);
+        color: #0F172A;
+    }
+
+    .loading {
+        text-align: center;
+        padding: 2rem;
+        color: #94A3B8;
+    }
+
+    @media (max-width: 768px) {
+        .dashboard-hero { padding: 2rem 1.25rem; }
+        .dashboard-main { padding: 1.5rem 1.25rem; }
+        .goals-meta { grid-template-columns: 1fr; }
+        .chart-tabs { justify-content: center; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- HERO BANNER -->
+<div class="dashboard-hero">
+    <div class="hero-glow"></div>
+    <div class="hero-content">
+        <div class="hero-greeting">
+            Good to see you, <span class="highlight">{{ full_name or username }}</span>
+        </div>
+        <div class="hero-sub">
+            <span class="hero-badge"><i class="fas fa-briefcase"></i> {{ profession or 'Finance Member' }}</span>
+            <span class="hero-badge"><i class="fas fa-calendar-alt"></i> Member</span>
+        </div>
+        <a href="{{ url_for('profile') }}" class="hero-cta">
+            <i class="fas fa-user-circle"></i> View Profile
+        </a>
+    </div>
+</div>
+
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% for category, msg in messages %}
+    <div class="alert alert-{{ category }}">
+        {{ msg }}
+    </div>
+  {% endfor %}
+{% endwith %}
+
+<!-- MAIN CONTENT -->
+<div class="dashboard-main">
+
+    <!-- KPI CARDS -->
+    <div class="kpi-grid">
+        <div class="kpi-card expenses">
+            <div class="kpi-icon"><i class="fas fa-arrow-trend-down"></i></div>
+            <div class="kpi-label">Total Expenses</div>
+            <div class="kpi-value">€{{ "%.0f"|format(total_amount) }}</div>
+            <div class="kpi-sub">This period</div>
+        </div>
+        <!--<div class="kpi-card upi">-->
+        <!--    <div class="kpi-icon"><i class="fas fa-mobile-alt"></i></div>-->
+        <!--    <div class="kpi-label">UPI Payments</div>-->
+        <!--    <div class="kpi-value">€{{ "%.0f"|format(total_upi) }}</div>-->
+        <!--    <div class="kpi-sub">Digital transfers</div>-->
+        <!--</div>-->
+        
+        
+        
+        <div class="kpi-card cash">
+            <div class="kpi-icon"><i class="fas fa-money-bill-wave"></i></div>
+            <div class="kpi-label">Cash Payments</div>
+            <div class="kpi-value">€{{ "%.0f"|format(total_cash) }}</div>
+            <div class="kpi-sub">Physical currency</div>
+        </div>
+        
+        <div class="kpi-card upi">
+            <div class="kpi-icon"><i class="fas fa-coins"></i></div>
+            <div class="kpi-label">Average Expense</div>
+            <div class="kpi-value">€{{ "%.0f"|format(average_expense) }}</div>
+            <div class="kpi-sub">Average</div>
+        </div>
+        
+        <div class="kpi-card cash">
+            <div class="kpi-icon"><i class="fas fa-percentage"></i></div>
+            <div class="kpi-label">Usage %</div>
+            <div class="kpi-value">{{ (usage_percent) }}%</div>
+            <div class="kpi-sub">usage</div>
+        </div>
+        
+        <div class="kpi-card savings">
+            <div class="kpi-icon"><i class="fas fa-piggy-bank"></i></div>
+            <div class="kpi-label">Remaining Budget</div>
+            <div class="kpi-value">€{{ "%.0f"|format(remaining_budget) }}</div>
+            <div class="kpi-sub">After expenses</div>
+        </div>
+    </div>
+
+    <!-- SAVINGS GOAL -->
+    <div class="goals-card">
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+            <span class="section-title"><i class="fas fa-bullseye" style="color:var(--emerald)"></i> Savings Goal Progress</span>
+            <div class="goal-status-badge
+                {% if savings_progress >= 100 %}bg-success text-white
+                {% elif savings_progress >= 75 %}bg-info text-white
+                {% elif savings_progress >= 50 %}bg-primary text-white
+                {% else %}bg-light text-muted{% endif %}">
+                {% if savings_progress >= 100 %}Goal Achieved! 🎉
+                {% elif savings_progress >= 75 %}Almost There! 🔥
+                {% elif savings_progress >= 50 %}Halfway! 💪
+                {% else %}Keep Going! 📈{% endif %}
+            </div>
+        </div>
+
+        <div class="goals-meta">
+            <div class="goals-meta-item">
+                <label>Monthly Income</label>
+                <span style="color:var(--emerald)">€{{ "%.2f"|format(monthly_income) }}</span>
+            </div>
+            <div class="goals-meta-item">
+                <label>Total Expenses</label>
+                <span style="color:var(--rose)">€{{ "%.2f"|format(total_amount) }}</span>
+            </div>
+            <div class="goals-meta-item">
+                <label>Savings Goal</label>
+                <span style="color:var(--sky)">€{{ "%.2f"|format(savings_goal) }}</span>
+            </div>
+        </div>
+
+        <div class="goals-progress-bar">
+            <div class="goals-progress-fill" style="width: {{ [savings_progress, 100]|min }}%;"></div>
+        </div>
+        <div style="display:flex; justify-content:space-between; font-size:0.78rem; color:#94A3B8; margin-top:0.4rem;">
+            <span>0%</span>
+            <span style="color:var(--emerald); font-weight:600">{{ "%.1f"|format(savings_progress) }}% saved</span>
+            <span>100%</span>
+        </div>
+    </div>
+
+    <!-- EXPENSE TRENDS SECTION -->
+    <div class="goals-card" style="margin-bottom: 1.5rem;">
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
+            <span class="section-title"><i class="fas fa-chart-line" style="color:var(--sky)"></i> Expense Trends</span>
+            <div class="chart-tabs">
+                <button class="chart-tab active" onclick="showChart('weekly')">Weekly</button>
+                <button class="chart-tab" onclick="showChart('monthly')">Monthly</button>
+            </div>
+        </div>
+        
+        <div id="weeklyChart" class="chart-container active">
+            <canvas id="weeklyExpenseChart"></canvas>
+        </div>
+        <div id="monthlyChart" class="chart-container">
+            <canvas id="monthlyExpenseChart"></canvas>
+        </div>
+    </div>
+
+    <!-- CHARTS -->
+    <div class="charts-grid">
+        <div class="chart-card">
+            <div class="section-title mb-3"><i class="fas fa-chart-pie" style="color:var(--sky)"></i> Expense by Category</div>
+            <canvas id="expenseChart"></canvas>
+        </div>
+        <div class="chart-card">
+            <div class="section-title mb-3"><i class="fas fa-chart-donut" style="color:var(--amber)"></i> Payment Methods</div>
+            <canvas id="paymentChart"></canvas>
+        </div>
+    </div>
+
+    <!-- RECENT TRANSACTIONS -->
+    <div class="table-card">
+        <div class="table-card-header">
+            <span class="section-title"><i class="fas fa-receipt" style="color:var(--rose)"></i> Recent Transactions</span>
+            <a href="{{ url_for('transactions') }}" class="btn-view-all">View All <i class="fas fa-arrow-right ms-1"></i></a>
+        </div>
+
+        <div style="overflow-x:auto">
+            <table class="modern-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Category</th>
+                        <th>Amount</th>
+                        <th>Method</th>
+                        <th>Notes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for transaction in recent_transactions %}
+                    <tr>
+                        <td style="color:#64748B">{{ transaction['date'] }}</td>
+                        <td><span class="cat-pill">{{ transaction['category'] }}</span></td>
+                        <td><span class="amount-neg">€{{ "%.2f"|format(transaction['amount']) }}</span></td>
+                        <td>
+                            <span class="method-tag
+                                {% if transaction['payment_method'] == 'UPI' %}method-upi
+                                {% elif transaction['payment_method'] == 'Cash' %}method-cash
+                                {% else %}method-card{% endif %}">
+                                {{ transaction['payment_method'] }}
+                            </span>
+                        </td>
+                        <td style="color:#94A3B8; font-size:0.82rem">{{ transaction['description'] or '—' }}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5" style="text-align:center; padding:2.5rem; color:#94A3B8">
+                            <i class="fas fa-receipt" style="font-size:2rem; opacity:0.3; display:block; margin-bottom:0.75rem"></i>
+                            No transactions yet. Add your first one!
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    Chart.defaults.font.family = "'DM Sans', sans-serif";
+
+    const categoryColors = [
+        '#FB7185','#38BDF8','#FBBF24','#00C896','#A78BFA',
+        '#F97316','#34D399','#60A5FA','#F472B6','#A3E635'
+    ];
+
+    // Category chart
+    const ctx = document.getElementById('expenseChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: {{ categories|tojson }},
+            datasets: [{
+                data: {{ category_amounts|tojson }},
+                backgroundColor: categoryColors,
+                borderWidth: 3,
+                borderColor: '#fff',
+                hoverBorderWidth: 0,
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: { position: 'bottom', labels: { usePointStyle: true, padding: 16, font: { size: 12 } } }
+            }
+        }
+    });
+
+    // Payment methods chart
+    const paymentCtx = document.getElementById('paymentChart').getContext('2d');
+    new Chart(paymentCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['UPI', 'Cash'],
+            datasets: [{
+                data: [{{ total_upi }}, {{ total_cash }}],
+                backgroundColor: ['#38BDF8', '#FBBF24'],
+                borderWidth: 3,
+                borderColor: '#fff',
+                hoverBorderWidth: 0,
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            cutout: '65%',
+            plugins: {
+                legend: { position: 'bottom', labels: { usePointStyle: true, padding: 16 } }
+            }
+        }
+    });
+
+    // Weekly and Monthly Charts
+    let weeklyChart = null;
+    let monthlyChart = null;
+
+    // Fetch weekly data
+    fetch('/weekly_spending_data')
+        .then(response => response.json())
+        .then(data => {
+            const weeklyCtx = document.getElementById('weeklyExpenseChart').getContext('2d');
+            weeklyChart = new Chart(weeklyCtx, {
+                type: 'line',
+                data: {
+                    labels: data.labels,
+                    datasets: [{
+                        label: 'Weekly Spending',
+                        data: data.amounts,
+                        borderColor: '#00C896',
+                        backgroundColor: 'rgba(0, 200, 150, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4,
+                        pointBackgroundColor: '#00C896',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointRadius: 5,
+                        pointHoverRadius: 7,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: { position: 'top' },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return '€' + context.raw.toFixed(2);
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return '€' + value;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        })
+        .catch(error => {
+            console.error('Error loading weekly data:', error);
+            document.getElementById('weeklyExpenseChart').parentElement.innerHTML = '<div class="loading">Failed to load weekly data</div>';
+        });
+
+    // Fetch monthly data
+    fetch('/monthly_spending_data')
+        .then(response => response.json())
+        .then(data => {
+            const monthlyCtx = document.getElementById('monthlyExpenseChart').getContext('2d');
+            monthlyChart = new Chart(monthlyCtx, {
+                type: 'bar',
+                data: {
+                    labels: data.labels,
+                    datasets: [{
+                        label: 'Monthly Spending',
+                        data: data.amounts,
+                        backgroundColor: '#38BDF8',
+                        borderColor: '#38BDF8',
+                        borderWidth: 2,
+                        borderRadius: 8,
+                        barPercentage: 0.7,
+                        categoryPercentage: 0.8,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: { position: 'top' },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return '€' + context.raw.toFixed(2);
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return '€' + value;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        })
+        .catch(error => {
+            console.error('Error loading monthly data:', error);
+            document.getElementById('monthlyExpenseChart').parentElement.innerHTML = '<div class="loading">Failed to load monthly data</div>';
+        });
+
+    // Chart toggle function
+    function showChart(type) {
+        // Hide all chart containers
+        document.getElementById('weeklyChart').classList.remove('active');
+        document.getElementById('monthlyChart').classList.remove('active');
+        
+        // Show selected chart
+        document.getElementById(type + 'Chart').classList.add('active');
+        
+        // Update active tab styling
+        const tabs = document.querySelectorAll('.chart-tab');
+        tabs.forEach(tab => {
+            tab.classList.remove('active');
+        });
+        
+        // Add active class to clicked tab
+        event.target.classList.add('active');
+        
+        // Refresh charts
+        if (type === 'weekly' && weeklyChart) {
+            weeklyChart.update();
+        } else if (type === 'monthly' && monthlyChart) {
+            monthlyChart.update();
+        }
+    }
+</script>
+{% endblock %}
