@@ -79,11 +79,11 @@ def get_db_connection():
         except Exception as e:
             print(f"Error getting connection from pool: {e}")
             return psycopg2.connect(**DATABASE_CONFIG)
-    else:
-        import sqlite3
-        conn = sqlite3.connect('finance_tracker.db')
-        conn.row_factory = sqlite3.Row
-        return conn
+    # else:
+    #     import sqlite3
+    #     conn = sqlite3.connect('finance_tracker.db')
+    #     conn.row_factory = sqlite3.Row
+    #     return conn
 
 def return_db_connection(conn):
     """Return connection to pool"""
@@ -254,9 +254,9 @@ def get_transaction_value(transaction, index, default=None):
 print("Initializing database connection...")
 if init_connection_pool():
     init_db()
-else:
-    print(" Using SQLite fallback mode...")
-    init_db()
+# else:
+#     print(" Using SQLite fallback mode...")
+#     init_db()
 
 
 
