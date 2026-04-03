@@ -261,29 +261,57 @@ else:
 
 
 
+from average_expense_lib import calculate_average_expense as calc_avg_expense
 
 
+
+# def calculate_average_expense(user_id):
+#     """Calculate average expense per transaction for a user"""
+#     try:
+#         result = execute_query("""
+#             SELECT COALESCE(AVG(amount), 0)
+#             FROM transactions
+#             WHERE user_id = %s
+#         """, (user_id,), fetch_one=True)
+
+#         if result:
+#             if isinstance(result, tuple):
+#                 return float(result[0]) if result[0] else 0
+#             else:
+#                 return float(result)
+#         return 0
+
+#     except Exception as e:
+#         print(f"Error calculating average expense: {e}")
+#         return 0
+    
+
+from average_expense_lib import calculate_average_expense as pypi_avg_calc
 
 def calculate_average_expense(user_id):
-    """Calculate average expense per transaction for a user"""
+    """Calculate average expense per transaction for a user using PyPI library"""
     try:
+        # Fetch all expense amounts for the user
         result = execute_query("""
-            SELECT COALESCE(AVG(amount), 0)
-            FROM transactions
+            SELECT amount FROM transactions
             WHERE user_id = %s
-        """, (user_id,), fetch_one=True)
-
+        """, (user_id,), fetch_all=True)
+        
+        # Extract amounts from query result
+        amounts = []
         if result:
-            if isinstance(result, tuple):
-                return float(result[0]) if result[0] else 0
-            else:
-                return float(result)
-        return 0
-
+            for row in result:
+                if isinstance(row, tuple):
+                    amounts.append(float(row[0]))
+                else:
+                    amounts.append(float(row))
+        
+        # Use PyPI library to calculate average
+        return pypi_avg_calc(amounts)
+        
     except Exception as e:
         print(f"Error calculating average expense: {e}")
         return 0
-    
     
     
     
@@ -1066,8 +1094,12 @@ def profile():
     else:
         user = user_data
         # Format datetime if it exists
-        if user and user.get('created_at') and hasattr(user['created_at'], 'strftime'):
+        # if user and user.get('created_at') and hasattr(user['created_at'], 'strftime'):
+        #     user['created_at'] = user['created_at'].strftime('%Y-%m-%d')
+        
+        if user and user['created_at'] and hasattr(user['created_at'], 'strftime'):
             user['created_at'] = user['created_at'].strftime('%Y-%m-%d')
+            
         # Convert Decimal to float
         if user:
             if user.get('monthly_income'):
