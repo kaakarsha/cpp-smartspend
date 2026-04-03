@@ -261,7 +261,7 @@ else:
 
 
 
-from average_expense_lib import calculate_average_expense as calc_avg_expense
+# from .avg_exp import calculate_average_expense as calc_avg_expense
 
 
 
@@ -286,32 +286,32 @@ from average_expense_lib import calculate_average_expense as calc_avg_expense
 #         return 0
     
 
-from average_expense_lib import calculate_average_expense as pypi_avg_calc
+# from average_expense_lib import calculate_average_expense as pypi_avg_calc
 
-def calculate_average_expense(user_id):
-    """Calculate average expense per transaction for a user using PyPI library"""
-    try:
-        # Fetch all expense amounts for the user
-        result = execute_query("""
-            SELECT amount FROM transactions
-            WHERE user_id = %s
-        """, (user_id,), fetch_all=True)
+# def calculate_average_expense(user_id):
+#     """Calculate average expense per transaction for a user using PyPI library"""
+#     try:
+#         # Fetch all expense amounts for the user
+#         result = execute_query("""
+#             SELECT amount FROM transactions
+#             WHERE user_id = %s
+#         """, (user_id,), fetch_all=True)
         
-        # Extract amounts from query result
-        amounts = []
-        if result:
-            for row in result:
-                if isinstance(row, tuple):
-                    amounts.append(float(row[0]))
-                else:
-                    amounts.append(float(row))
+#         # Extract amounts from query result
+#         amounts = []
+#         if result:
+#             for row in result:
+#                 if isinstance(row, tuple):
+#                     amounts.append(float(row[0]))
+#                 else:
+#                     amounts.append(float(row))
         
-        # Use PyPI library to calculate average
-        return pypi_avg_calc(amounts)
+#         # Use PyPI library to calculate average
+#         return pypi_avg_calc(amounts)
         
-    except Exception as e:
-        print(f"Error calculating average expense: {e}")
-        return 0
+#     except Exception as e:
+#         print(f"Error calculating average expense: {e}")
+#         return 0
     
     
     
@@ -410,7 +410,8 @@ def index():
     try:
         # Get user profile data
         
-        average_expense = calculate_average_expense(user_id)
+        # average_expense = calculate_average_expense(user_id)
+        average_expense = 7000
         user_profile = execute_query(
             "SELECT full_name, profession, monthly_income, savings_goal FROM users WHERE id = %s",
             (user_id,), fetch_one=True
@@ -817,7 +818,7 @@ def upload_to_s3(csv_data, user_id):
         ContentType='text/csv'
     )
 
-    # ✅ Generate pre-signed URL (valid for 1 hour)
+    # Generate pre-signed URL (valid for 1 hour)
     file_url = s3.generate_presigned_url(
     'get_object',
     Params={
