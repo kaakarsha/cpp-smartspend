@@ -7,7 +7,7 @@ on:
 
 jobs:
 
-  build_flask:
+  build_cpp_project:
     runs-on: ubuntu-latest
 
     steps:
@@ -59,7 +59,7 @@ jobs:
 
   deploy_on_eb:
     runs-on: ubuntu-latest
-    needs: build_flask
+    needs: build_cpp_project
   
     steps:
       - name: Download Deployment Package
