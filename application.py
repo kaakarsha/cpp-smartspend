@@ -79,11 +79,7 @@ def get_db_connection():
         except Exception as e:
             print(f"Error getting connection from pool: {e}")
             return psycopg2.connect(**DATABASE_CONFIG)
-    # else:
-    #     import sqlite3
-    #     conn = sqlite3.connect('finance_tracker.db')
-    #     conn.row_factory = sqlite3.Row
-    #     return conn
+
 
 def return_db_connection(conn):
     """Return connection to pool"""
@@ -146,37 +142,37 @@ def init_db():
             cursor.execute('CREATE INDEX IF NOT EXISTS idx_transactions_date ON transactions(date)')
             cursor.execute('CREATE INDEX IF NOT EXISTS idx_users_username ON users(username)')
             cursor.execute('CREATE INDEX IF NOT EXISTS idx_users_email ON users(email)')
-        else:
-            # SQLite schema
-            cursor.execute('''
-                CREATE TABLE IF NOT EXISTS users (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    username TEXT NOT NULL UNIQUE,
-                    email TEXT NOT NULL UNIQUE,
-                    phone TEXT NOT NULL,
-                    password TEXT NOT NULL,
-                    full_name TEXT,
-                    profession TEXT,
-                    monthly_income REAL DEFAULT 0,
-                    savings_goal REAL DEFAULT 0,
-                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-                )
-            ''')
+        # else:
             
-            cursor.execute('''
-                CREATE TABLE IF NOT EXISTS transactions (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    user_id INTEGER NOT NULL,
-                    amount REAL NOT NULL,
-                    category TEXT NOT NULL,
-                    date TEXT NOT NULL,
-                    description TEXT,
-                    payment_method TEXT NOT NULL,
-                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-                )
-            ''')
+        #     cursor.execute('''
+        #         CREATE TABLE IF NOT EXISTS users (
+        #             id INTEGER PRIMARY KEY AUTOINCREMENT,
+        #             username TEXT NOT NULL UNIQUE,
+        #             email TEXT NOT NULL UNIQUE,
+        #             phone TEXT NOT NULL,
+        #             password TEXT NOT NULL,
+        #             full_name TEXT,
+        #             profession TEXT,
+        #             monthly_income REAL DEFAULT 0,
+        #             savings_goal REAL DEFAULT 0,
+        #             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        #             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        #         )
+        #     ''')
+            
+        #     cursor.execute('''
+        #         CREATE TABLE IF NOT EXISTS transactions (
+        #             id INTEGER PRIMARY KEY AUTOINCREMENT,
+        #             user_id INTEGER NOT NULL,
+        #             amount REAL NOT NULL,
+        #             category TEXT NOT NULL,
+        #             date TEXT NOT NULL,
+        #             description TEXT,
+        #             payment_method TEXT NOT NULL,
+        #             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        #             FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+        #         )
+        #     ''')
         
         conn.commit()
         print(" Database tables created successfully!")
@@ -254,64 +250,34 @@ def get_transaction_value(transaction, index, default=None):
 print("Initializing database connection...")
 if init_connection_pool():
     init_db()
-# else:
-#     print(" Using SQLite fallback mode...")
-#     init_db()
 
 
+from average_expense_lib import calculate_average_expense as pypi_avg_calc
 
-
-# from .avg_exp import calculate_average_expense as calc_avg_expense
-
-
-
-# def calculate_average_expense(user_id):
-#     """Calculate average expense per transaction for a user"""
-#     try:
-#         result = execute_query("""
-#             SELECT COALESCE(AVG(amount), 0)
-#             FROM transactions
-#             WHERE user_id = %s
-#         """, (user_id,), fetch_one=True)
-
-#         if result:
-#             if isinstance(result, tuple):
-#                 return float(result[0]) if result[0] else 0
-#             else:
-#                 return float(result)
-#         return 0
-
-#     except Exception as e:
-#         print(f"Error calculating average expense: {e}")
-#         return 0
-    
-
-# from average_expense_lib import calculate_average_expense as pypi_avg_calc
-
-# def calculate_average_expense(user_id):
-#     """Calculate average expense per transaction for a user using PyPI library"""
-#     try:
-#         # Fetch all expense amounts for the user
-#         result = execute_query("""
-#             SELECT amount FROM transactions
-#             WHERE user_id = %s
-#         """, (user_id,), fetch_all=True)
+def calculate_average_expense(user_id):
+    """Calculate average expense per transaction for a user using PyPI library"""
+    try:
+        # Fetch all expense amounts for the user
+        result = execute_query("""
+            SELECT amount FROM transactions
+            WHERE user_id = %s
+        """, (user_id,), fetch_all=True)
         
-#         # Extract amounts from query result
-#         amounts = []
-#         if result:
-#             for row in result:
-#                 if isinstance(row, tuple):
-#                     amounts.append(float(row[0]))
-#                 else:
-#                     amounts.append(float(row))
+        # Extract amounts from query result
+        amounts = []
+        if result:
+            for row in result:
+                if isinstance(row, tuple):
+                    amounts.append(float(row[0]))
+                else:
+                    amounts.append(float(row))
         
-#         # Use PyPI library to calculate average
-#         return pypi_avg_calc(amounts)
+        # Use PyPI library to calculate average
+        return pypi_avg_calc(amounts)
         
-#     except Exception as e:
-#         print(f"Error calculating average expense: {e}")
-#         return 0
+    except Exception as e:
+        print(f"Error calculating average expense: {e}")
+        return 0
     
     
     
@@ -410,8 +376,8 @@ def index():
     try:
         # Get user profile data
         
-        # average_expense = calculate_average_expense(user_id)
-        average_expense = 7000
+        average_expense = calculate_average_expense(user_id)
+        # average_expense = 7000
         user_profile = execute_query(
             "SELECT full_name, profession, monthly_income, savings_goal FROM users WHERE id = %s",
             (user_id,), fetch_one=True
@@ -559,6 +525,10 @@ def logout():
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
+        full_name = request.form['full_name']
+        profession = request.form['profession']
+        monthly_income = request.form['monthly_income']
+        saving_goal = request.form['savings_goal']
         username = request.form['username']
         email = request.form['email']
         phone = request.form['phone']
@@ -575,8 +545,8 @@ def register():
                 flash('Username already exists. Please choose a different one.', 'error')
             else:
                 execute_query(
-                    "INSERT INTO users (username, email, phone, password) VALUES (%s, %s, %s, %s)",
-                    (username, email, phone, password), commit=True
+                    "INSERT INTO users (username, email, phone, password, full_name, profession, monthly_income, savings_goal) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)",
+                    (username, email, phone, password, full_name, profession, monthly_income, saving_goal), commit=True
                 )
                 flash('Registration successful! Please log in.', 'success')
                 return redirect(url_for('login'))

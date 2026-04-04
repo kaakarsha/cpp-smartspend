@@ -30,4 +30,4 @@ psycopg2-binary
 dotenv
 boto3
 requests
-average-expense-lib
+average-expense-lib==0.2.0
