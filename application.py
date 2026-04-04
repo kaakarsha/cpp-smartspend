@@ -252,6 +252,7 @@ if init_connection_pool():
     init_db()
 
 
+
 from average_expense_lib import calculate_average_expense as pypi_avg_calc
 
 def calculate_average_expense(user_id):
@@ -279,48 +280,6 @@ def calculate_average_expense(user_id):
         print(f"Error calculating average expense: {e}")
         return 0
     
-    
-    
-# def get_user_expenses(user_id):
-#     """Fetch all expense amounts for a user"""
-#     try:
-#         result = execute_query(
-#             "SELECT amount FROM transactions WHERE user_id = %s",
-#             (user_id,),
-#             fetch_all=True
-#         )
-
-#         expenses = []
-
-#         for row in result:
-#             if row and len(row) > 0:
-#                 expenses.append(float(row[0]))
-
-#         return expenses
-
-#     except Exception as e:
-#         print(f"Error fetching expenses: {e}")
-#         return []
-
-
-
-# response = requests.post(
-#     "https://zq33g01d14.execute-api.us-east-1.amazonaws.com/default/lambda-cpp-x25105990",
-#     json={
-#         "monthly_income": monthly_income,
-#         "total_expenses": total_amount
-#     }
-# )
-
-# data = response.json()
-
-# # Flash alert
-# if data.get("message"):
-#     flash(data["message"], data["type"])
-
-# # Use percentage (for progress bar)
-# usage_percent = data.get("usage_percent", 0)
-
 
 
 def handle_budget_flash(alert_data):
