@@ -21,9 +21,9 @@ app.secret_key = os.environ.get('SECRET_KEY', 'your_secret_key_here')
 DATABASE_CONFIG = {
     'host': os.environ.get('DB_HOST', 'postgres-rds-cpp.clygm6iaiqxj.us-east-1.rds.amazonaws.com'),
     'port': int(os.environ.get('DB_PORT', 5432)),
-    'database': os.environ.get('DB_NAME', 'finance_tracker'),
+    'database': os.environ.get('DB_NAME', 'postgres-rds-cpp'),
     'user': os.environ.get('DB_USER', 'postgres'),
-    'password': os.environ.get('DB_PASSWORD', ''),
+    'password': os.environ.get('DB_PASSWORD', 'postgres-rds-cpp'),
     'connect_timeout': 30,
     'keepalives': 1,
     'keepalives_idle': 5,
