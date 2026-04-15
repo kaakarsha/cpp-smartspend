@@ -1,17 +1,17 @@
-SpendSmart – Expense Tracking System - CPP Project
+SpendSmart – Expense Tracking System
 
 SpendSmart is a cloud-based web application that helps users track, manage, and analyze their daily expenses efficiently. It provides real-time insights, CSV export functionality, and automated email notifications using AWS services.
 
 <pre>
-🚀 Features
-🔐 User Authentication (Login system)
-📊 Dashboard with expense analytics & graphs
-➕ CRUD operations for managing expenses
-📁 Export expense reports as CSV
-📧 Email notifications for transactions & reports
-📈 Expense-to-income percentage calculation
-☁️ Fully deployed on AWS Cloud
-🛠️ Tech Stack
+Features
+User Authentication (Login system)
+Dashboard with expense analytics & graphs
+CRUD operations for managing expenses
+Export expense reports as CSV
+Email notifications for transactions & reports
+Expense-to-income percentage calculation
+Fully deployed on AWS Cloud
+Tech Stack
 </pre>
 
 <pre>
@@ -39,7 +39,7 @@ URL : https://pypi.org/project/average-expense-lib/
 </pre>
 
 <pre>
-⚙️ How It Works
+How It Works
 User logs into the system
 Adds/updates/deletes expenses
 Dashboard displays insights and charts
@@ -48,7 +48,7 @@ Email notifications are triggered via AWS SNS
 Analytics (average & percentage) computed using Lambda
 </pre>
 <pre>
-📁 Project Structure (Example)
+Project Structure (Example)
 
 ├── application.py
 ├── templates/
@@ -58,19 +58,21 @@ Analytics (average & percentage) computed using Lambda
 </pre>
 
 <pre>
-🔄 CI/CD
+CI/CD
 GitHub Actions is used for automation
 Automatically builds and deploys on code push
 </pre>
+
 <pre>
-🎯 Objectives
+Objectives
 Efficient expense tracking system
 Secure and scalable cloud-based architecture
 Real-time analytics and reporting
 Integration of multiple AWS services
 </pre>
+
 <pre>
-📌 Future Improvements
+Future Improvements
 Multi-user support
 Mobile app integration
 Budget alerts & recommendations
