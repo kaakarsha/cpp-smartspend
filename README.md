@@ -1,14 +1,62 @@
-         ___        ______     ____ _                 _  ___  
-        / \ \      / / ___|   / ___| | ___  _   _  __| |/ _ \ 
-       / _ \ \ /\ / /\___ \  | |   | |/ _ \| | | |/ _` | (_) |
-      / ___ \ V  V /  ___) | | |___| | (_) | |_| | (_| |\__, |
-     /_/   \_\_/\_/  |____/   \____|_|\___/ \__,_|\__,_|  /_/ 
- ----------------------------------------------------------------- 
+SpendSmart – Expense Tracking System - CPP Project
 
+SpendSmart is a cloud-based web application that helps users track, manage, and analyze their daily expenses efficiently. It provides real-time insights, CSV export functionality, and automated email notifications using AWS services.
 
-Hi there! Welcome to AWS Cloud9!
+🚀 Features
+🔐 User Authentication (Login system)
+📊 Dashboard with expense analytics & graphs
+➕ CRUD operations for managing expenses
+📁 Export expense reports as CSV
+📧 Email notifications for transactions & reports
+📈 Expense-to-income percentage calculation
+☁️ Fully deployed on AWS Cloud
+🛠️ Tech Stack
 
-To get started, create some files, play with the terminal,
-or visit https://docs.aws.amazon.com/console/cloud9/ for our documentation.
+Frontend & Backend
 
-Happy coding!
+Python (Flask)
+HTML, CSS, JavaScript
+
+Cloud & Services (AWS)
+
+Elastic Beanstalk – App deployment
+RDS (PostgreSQL) – Database
+S3 – File storage (CSV reports)
+SNS – Email notifications
+Lambda – Serverless computations
+API Gateway – API management
+Cloud9 – Development environment
+📦 Custom Library
+
+A custom PyPI library is used to calculate average expenses:
+
+pip install average-expense-lib
+
+URL: http://spendsmart.us-east-1.elasticbeanstalk.com/login
+
+⚙️ How It Works
+User logs into the system
+Adds/updates/deletes expenses
+Dashboard displays insights and charts
+Expenses can be exported as CSV
+Email notifications are triggered via AWS SNS
+Analytics (average & percentage) computed using Lambda
+📁 Project Structure (Example)
+├── application.py
+├── templates/
+├── static/
+├── requirements.txt
+└── README.md
+🔄 CI/CD
+GitHub Actions is used for automation
+Automatically builds and deploys on code push
+🎯 Objectives
+Efficient expense tracking system
+Secure and scalable cloud-based architecture
+Real-time analytics and reporting
+Integration of multiple AWS services
+📌 Future Improvements
+Multi-user support
+Mobile app integration
+Budget alerts & recommendations
+Advanced analytics
