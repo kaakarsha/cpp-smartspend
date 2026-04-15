@@ -42,19 +42,23 @@ Expenses can be exported as CSV
 Email notifications are triggered via AWS SNS
 Analytics (average & percentage) computed using Lambda
 📁 Project Structure (Example)
+
 ├── application.py
 ├── templates/
 ├── static/
 ├── requirements.txt
 └── README.md
+
 🔄 CI/CD
 GitHub Actions is used for automation
 Automatically builds and deploys on code push
+
 🎯 Objectives
 Efficient expense tracking system
 Secure and scalable cloud-based architecture
 Real-time analytics and reporting
 Integration of multiple AWS services
+
 📌 Future Improvements
 Multi-user support
 Mobile app integration
